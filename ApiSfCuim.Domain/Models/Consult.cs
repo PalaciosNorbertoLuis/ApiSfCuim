@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ApiSfCuim.Domain.Models
 {
-    public partial class SfViewConsultaArma
+    public partial class Consult
     {
         [Key]
         public int? IdDescripcionArma { get; set; }
