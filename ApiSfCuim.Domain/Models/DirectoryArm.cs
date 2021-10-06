@@ -7,10 +7,40 @@ using System.Threading.Tasks;
 
 namespace ApiSfCuim.Domain.Models
 {
-    public class ReferenceArm
+    public class DirectoryArm
     {
-        public ReferenceArm() { }
+        public DirectoryArm() { }
 
+
+        public static object Search (string Arg)
+        {
+            // Specify the directory you want to manipulate.
+            string path = @"c:\Test\" + Arg;
+            string[] msg;
+            try
+            {
+                // Determine whether the directory exists.
+                if (Directory.Exists(path))
+                {
+                    string[] patterns = {"jpg","png","txt"};
+                        
+                    object image = Directory.EnumerateFiles(path, "*.*").Where(file => patterns.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase)));
+
+                    return image; 
+                }
+                msg = new[] { $"Aun no se subieron fotos para la referencia {Arg}." };
+                return msg;
+            }
+            catch (Exception e)
+            {
+                msg = new[] { "The process failed: {0}" + e.ToString() };
+
+                return (msg);
+            }
+            finally { }
+
+
+        }
         public static string Directorios(string Arg)
         {
 
@@ -32,11 +62,6 @@ namespace ApiSfCuim.Domain.Models
                 DirectoryInfo di = Directory.CreateDirectory(path);
                 msg = ($"El directorio se creo correctamente el {Directory.GetCreationTime(path)}.");
                 return (msg);
-                //Console.WriteLine("The directory was created successfully at {0}.", Directory.GetCreationTime(path));
-
-                // Delete the directory.
-                //di.Delete();
-                //  Console.WriteLine("The directory was deleted successfully.");
             }
             catch (Exception e)
             {

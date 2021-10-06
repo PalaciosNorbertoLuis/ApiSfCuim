@@ -10,15 +10,25 @@ namespace ApiSfCuim.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReferenceArmController : ControllerBase
+    public class DirectoryArmController : ControllerBase
     {
+
+        [HttpGet]
+        
+        public IActionResult Get(string Arg)
+        {
+            return Ok(DirectoryArm.Search(Arg));
+        }
+
+
+
+
+
         [HttpPost]
-        //[Route("created")]
-
-
+        
         public IActionResult Post(string Arg)
         {
-            return Ok(ReferenceArm.Directorios(Arg));
+            return Ok(DirectoryArm.Directorios(Arg));
         }
 
     }
