@@ -13,9 +13,9 @@ namespace ApiSfCuim.Controllers
     [ApiController]
     public class ConsultController : ControllerBase
     {
-        private readonly ConsultContext _context;
+        private readonly RenarContext _context;
 
-        public ConsultController (ConsultContext context)
+        public ConsultController (RenarContext context)
         {
             _context = context;
         }

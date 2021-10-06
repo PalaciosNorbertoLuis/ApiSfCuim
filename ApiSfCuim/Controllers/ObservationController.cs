@@ -13,8 +13,8 @@ namespace ApiSfCuim.Controllers
     [ApiController]
     public class ObservationController : ControllerBase
     {
-        private readonly ObservationContext _context;
-        public ObservationController (ObservationContext context)
+        private readonly SigimacContext _context;
+        public ObservationController (SigimacContext context)
         {
             _context = context;
         }

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ApiSfCuim.Data.Context
 {
-    public class ConsultContext : DbContext
+    public class RenarContext : DbContext
     {
-        public ConsultContext (DbContextOptions <ConsultContext> options) : base(options) { }
+        public RenarContext (DbContextOptions <RenarContext> options) : base(options) { }
 
         public virtual DbSet <Consult> Consults { get; set; }
 

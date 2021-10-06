@@ -1,4 +1,5 @@
 ﻿using ApiSfCuim.Data.Context;
+using ApiSfCuim.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,14 +13,30 @@ namespace ApiSfCuim.Controllers
     [ApiController]
     public class FilterController : ControllerBase
     {
-        private readonly FilterContext _context;
+        private readonly SigimacContext _context;
 
-        public FilterController (FilterContext context)
+        public FilterController (SigimacContext context)
         {
             _context = context;
         }
 
         [HttpGet("{reference}")]
+
+        public IActionResult Index(int reference)
+        {
+            List<Filter> filter = _context.Filters
+                                .Where(e => e.IdTmpArma == reference)
+                                .Select(e => new Filter
+                                {
+                                    IdTmpArma          = e.IdTmpArma,
+                                    FechaFiltro        = e.FechaFiltro,
+                                    Filtro             = e.Filtro,
+                                    TipoOperadorFiltro = e.TipoOperadorFiltro,
+                                    IdOperadorFiltro   = e.IdOperadorFiltro
+                                }).ToList();
+            return Ok(filter);
+                                
+        }
 
 
     }

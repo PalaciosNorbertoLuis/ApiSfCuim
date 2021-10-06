@@ -13,9 +13,9 @@ namespace ApiSfCuim.Controllers
     [ApiController]
     public class ReferenceController : ControllerBase
     {
-        private readonly ReferenceContext _context;
+        private readonly SigimacContext _context;
 
-        public ReferenceController (ReferenceContext context)
+        public ReferenceController (SigimacContext context)
         {
             _context = context;
         }

@@ -34,9 +34,9 @@ namespace ApiSfCuim
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiSfCuim", Version = "v1" });
             });
-            services.AddDbContext<ConsultContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDbContext<ReferenceContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection2")));
-            services.AddDbContext<ObservationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection2")));
+            services.AddDbContext<RenarContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<SigimacContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection2")));
+ //           services.AddDbContext<ObservationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection2")));
 
         }
 
