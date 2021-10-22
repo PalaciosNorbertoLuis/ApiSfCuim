@@ -18,6 +18,7 @@ namespace ApiSfCuim
 {
     public class Startup
     {
+        private readonly string  _MyCors = "MyCors"; 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,9 +35,20 @@ namespace ApiSfCuim
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiSfCuim", Version = "v1" });
             });
-            services.AddDbContext<RenarContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDbContext<SigimacContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection2")));
- //           services.AddDbContext<ObservationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection2")));
+
+            services.AddCors(options => 
+            {
+                options.AddPolicy(name: _MyCors, builder =>
+                {
+                    builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                                                                        .AllowAnyHeader()
+                                                                        .AllowAnyMethod();
+                });
+            });
+
+            services.AddDbContext<RenarContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RenarConnection")));
+            services.AddDbContext<SigimacContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SigimacConnection")));
+            services.AddDbContext<RenarAuxiliarContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RenarAuxiliarConnection")));
 
         }
 
@@ -53,6 +65,8 @@ namespace ApiSfCuim
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(_MyCors);
 
             app.UseAuthorization();
 

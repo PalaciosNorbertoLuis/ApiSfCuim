@@ -27,14 +27,14 @@ namespace ApiSfCuim.Data.Context
                 Entity.Property(e => e.FechaFiltro);
                 Entity.Property(e => e.Filtro).HasMaxLength(50);
                 Entity.Property(e => e.IdOperadorFiltro).HasMaxLength(5);
-                Entity.Property(e => e.IdOperadorFiltro).HasMaxLength(5);
+                Entity.Property(e => e.TipoOperadorFiltro).HasMaxLength(5);
             });
 
             modelBuilder.Entity<Observation>(Entity =>
             {
                 Entity.HasKey(e => e.IdTmpArma);
                 Entity.ToView("SF_VIEW_OBSER_REFERENCIA");
-                Entity.Property(e => e.Fecha);
+                Entity.Property(e => e.FechaObservation);
                 Entity.Property(e => e.Observacion).HasMaxLength(500);
             });
 
@@ -49,6 +49,9 @@ namespace ApiSfCuim.Data.Context
                 Entity.Property(e => e.TipoArma);
                 Entity.Property(e => e.Marca);
                 Entity.Property(e => e.Modelo);
+                Entity.Property(e => e.Calibre);
+                Entity.Property(e => e.Medida);
+                Entity.Property(e => e.Clase);
             });
 
         }

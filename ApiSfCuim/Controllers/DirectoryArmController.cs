@@ -13,7 +13,7 @@ namespace ApiSfCuim.Controllers
     public class DirectoryArmController : ControllerBase
     {
 
-        [HttpGet]
+        [HttpGet("{Arg}")]
         
         public IActionResult Get(string Arg)
         {

@@ -21,11 +21,12 @@ namespace ApiSfCuim.Data.Context
                 Entity.HasKey(e => e.IdDescripcionArma);
                 Entity.ToView("SF_VIEW_CONSULTA_ARMA");
                 Entity.Property(e => e.TipoArma).HasMaxLength(50);
+                Entity.Property(e => e.Marca).HasMaxLength(30);
                 Entity.Property(e => e.Modelo).HasMaxLength(20);
                 Entity.Property(e => e.Medida).HasMaxLength(20);
                 Entity.Property(e => e.Calibre).HasMaxLength(30);
                 Entity.Property(e => e.Clase).HasMaxLength(30);
-            }); 
+            });
         } 
     }
 }

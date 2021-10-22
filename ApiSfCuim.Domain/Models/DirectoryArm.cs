@@ -16,17 +16,42 @@ namespace ApiSfCuim.Domain.Models
         {
             // Specify the directory you want to manipulate.
             string path = @"c:\Test\" + Arg;
+
             string[] msg;
+            List<string> images = new();
             try
             {
                 // Determine whether the directory exists.
                 if (Directory.Exists(path))
                 {
-                    string[] patterns = {"jpg","png","txt"};
-                        
-                    object image = Directory.EnumerateFiles(path, "*.*").Where(file => patterns.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase)));
+                    string[] patterns = {"jpg","png","JPEG", "txt" }; //,
 
-                    return image; 
+                    IEnumerable<string> image = Directory.GetFiles(path, "*.*").Where(file => patterns.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase)));
+
+                    foreach (var item in image)
+                    {
+                        string extension = Path.GetExtension(item)[1..];
+                        if (extension == "txt")
+                        {
+                            string fecha = Path.GetFileNameWithoutExtension(item);
+                            string anio = fecha.Substring(0,4);
+                            string mes = fecha.Substring(4,2);
+                            string dia = fecha.Substring(6,2);
+
+
+                            images.Add("Las fotos se subieron/actualizaron el día : " +dia+"/"+mes+"/"+anio);
+                        }
+                        else
+                        {
+                            byte[] text = File.ReadAllBytes(item);
+                            string text2 = Convert.ToBase64String(text);
+                            images.Add(text2);
+                        }
+
+                    }
+
+                    return images;
+
                 }
                 msg = new[] { $"Aun no se subieron fotos para la referencia {Arg}." };
                 return msg;

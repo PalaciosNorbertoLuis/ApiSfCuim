@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace ApiSfCuim.Domain.Models
 {
-    public partial class Observation
+    public  class Observation
     {
-        [Key]
         public int IdTmpArma { get; set; }
-        public DateTime? Fecha { get; set; }
+        public DateTime FechaObservation { get; set; }
         public string Observacion { get; set; }
     }
 }

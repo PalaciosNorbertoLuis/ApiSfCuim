@@ -24,11 +24,11 @@ namespace ApiSfCuim.Controllers
         public IActionResult Index(int reference)
         {
             List<Observation> Obser = _context.Observations
-                .Where(e => e.IdTmpArma == reference)
+                .Where(e => e.IdTmpArma == reference).OrderBy(e=> e.FechaObservation)
                 .Select(e => new Observation
                 {
                     IdTmpArma   = e.IdTmpArma,
-                    Fecha       = e.Fecha,
+                    FechaObservation = e.FechaObservation,
                     Observacion = e.Observacion
 
                 }).ToList();

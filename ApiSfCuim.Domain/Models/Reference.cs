@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace ApiSfCuim.Domain.Models
 {
-    public partial class Reference
+    public  class Reference
     {
-        [Key]
         public int? IdTmpArma { get; set; }
         public int? IdDescArmaFK { get; set; }
         public string NumeroSerie { get; set; }
@@ -18,6 +17,9 @@ namespace ApiSfCuim.Domain.Models
         public string TipoArma { get; set; }
         public string Marca { get; set; }
         public string Modelo { get; set; }
+        public string Calibre { get; set; }
+        public string Medida { get; set; }
+        public string Clase { get; set; }
 
     }
 }
