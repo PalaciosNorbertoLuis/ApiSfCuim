@@ -1,6 +1,8 @@
 ﻿using ApiSfCuim.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,16 +14,21 @@ namespace ApiSfCuim.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DirectoryArmController : ControllerBase
     {
+        private readonly IConfiguration _config;
+        public DirectoryArmController (IConfiguration config)
+        {
+            _config = config;
+        }
 
-        [HttpGet("{Arg}")]
-
-        public object Get(string Arg)
+        [HttpGet("{reference}")]
+        public object Get(string reference)
         {
 
             // Variables 
-            string path = @"c:\Test\" + Arg;
+            string path = _config.GetValue<string>("serverSettings:PathDirectory") + reference;
             dynamic msg;
             List<string> images = new();
             try
@@ -60,7 +67,7 @@ namespace ApiSfCuim.Controllers
                 }
                // msg = $"Aún no hay fotos para la referencia {Arg}";
 
-                return JsonConvert.SerializeObject($"Aún no hay fotos para la referencia {Arg}");
+                return JsonConvert.SerializeObject($"Aún no hay fotos para la referencia {reference}");
             }
             catch (Exception e)
             {
@@ -81,7 +88,7 @@ namespace ApiSfCuim.Controllers
             try
             {
 
-                string path = @"c:\Test\";
+                string path = _config.GetValue<string>("serverSettings:PathDirectory");
                 string imageB64;
                 string referencePath = reference;
                 int i = 1;
@@ -99,13 +106,14 @@ namespace ApiSfCuim.Controllers
                     Directory.CreateDirectory(folderPath);
                     foreach (string date in dates)
                     {
-                        imageB64 = date.Substring(date.IndexOf(",") + 1);
+                        //Substring para obtener el path de la imagen
+                        imageB64 = date[(date.IndexOf(",") + 1)..];
                         System.IO.File.WriteAllBytes(Path.Combine(folderPath, $"{referencePath}({i}).jpg"), Convert.FromBase64String(imageB64));
                         i++;
                     }
-                    //Se agrega el nuevo TXT
+                    //Se agrega el TXT
                     string fecha = DateTime.Now.ToString("yyyyMMdd");
-                    System.IO.File.Create(folderPath + @"\" + fecha + ".txt");
+                    System.IO.File.Create(folderPath + @"\" + fecha + ".txt").Close();
 
                     return Ok(JsonConvert.SerializeObject("Las fotos fueron guardadas"));
                 }
@@ -133,13 +141,15 @@ namespace ApiSfCuim.Controllers
                     // Se agregan las nuevas fotos. 
                     foreach (string date in dates)
                     {
-                        imageB64 = date.Substring(date.IndexOf(",") + 1);
+                        //Substring para obtener el path de la imagen
+                        imageB64 = date[(date.IndexOf(",") + 1)..];
                         System.IO.File.WriteAllBytes(Path.Combine(folderPath, $"{referencePath}({i}).jpg"), Convert.FromBase64String(imageB64));
                         i++;
                     }
                     //Se agrega el nuevo TXT
                     string fecha = DateTime.Now.ToString("yyyyMMdd");
-                    System.IO.File.Create (folderPath+@"\"+fecha+".txt");
+                    System.IO.File.Create (folderPath+@"\"+fecha+".txt").Close();
+                    
                 }
 
                 return Ok(JsonConvert.SerializeObject("Las fotos fueron guardadas"));
@@ -151,7 +161,10 @@ namespace ApiSfCuim.Controllers
 
                 return (msg);
             }
-            finally { }
+            finally 
+            {
+                
+            }
         }
 
     }

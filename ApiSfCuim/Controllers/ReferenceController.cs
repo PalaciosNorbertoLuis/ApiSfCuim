@@ -1,4 +1,5 @@
 ﻿using ApiSfCuim.Data.Context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -9,8 +10,11 @@ using System.Threading.Tasks;
 
 namespace ApiSfCuim.Controllers
 {
+    
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+   
     public class ReferenceController : ControllerBase
     {
         private readonly SigimacContext _context;
@@ -19,8 +23,9 @@ namespace ApiSfCuim.Controllers
         {
             _context = context;
         }
-
+        
         [HttpGet("{reference}")]
+        
 
         public async Task <ActionResult<Reference>> GetReferences (int? reference)
         {
@@ -28,7 +33,7 @@ namespace ApiSfCuim.Controllers
 
             if (rEference == null)
             {
-                return NotFound();
+                return Ok();
             }
 
             return Ok(rEference);

@@ -1,5 +1,6 @@
 ﻿using ApiSfCuim.Data.Context;
 using ApiSfCuim.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +12,7 @@ namespace ApiSfCuim.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ConsultController : ControllerBase
     {
         private readonly RenarContext _context;
