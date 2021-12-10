@@ -28,6 +28,7 @@ namespace ApiSfCuim.Data.Context
                 Entity.Property(e => e.Filtro).HasMaxLength(50);
                 Entity.Property(e => e.IdOperadorFiltro).HasMaxLength(5);
                 Entity.Property(e => e.TipoOperadorFiltro).HasMaxLength(5);
+                Entity.Ignore(e => e.Operador);
             });
 
             modelBuilder.Entity<Observation>(Entity =>

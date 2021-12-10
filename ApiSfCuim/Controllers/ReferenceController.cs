@@ -12,7 +12,7 @@ namespace ApiSfCuim.Controllers
 {
     
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
    
     public class ReferenceController : ControllerBase

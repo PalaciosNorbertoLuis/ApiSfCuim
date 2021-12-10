@@ -9,16 +9,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.DirectoryServices;
 using Newtonsoft.Json;
 using System.Runtime.Versioning;
 using System.Security.Claims;
-using System.DirectoryServices.AccountManagement;
+using System.DirectoryServices.Protocols;
 using Microsoft.Extensions.Options;
+using System.Net;
 
 namespace ApiSfCuim.Controllers
 {
-    [SupportedOSPlatform("windows")]
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : Controller
@@ -51,7 +50,7 @@ namespace ApiSfCuim.Controllers
             return response;
         }
 
-        private string GenerateJwtToken(UserModel usuario)
+        private  string GenerateJwtToken(UserModel usuario)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetValue<string>("tokenSettings:SecurityKey")));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
@@ -59,7 +58,7 @@ namespace ApiSfCuim.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Subject = new  ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, usuario.User),
                     new Claim(ClaimTypes.GivenName, usuario.NombreCompleto),
@@ -73,62 +72,69 @@ namespace ApiSfCuim.Controllers
         }
 
 
-        //Verificar usuario contraseña y grupo contra active directory
+        //Verificar usuario, contraseña y grupo contra active directory
         private dynamic AuthenticateUser(UserModel login)
         {
-            string userName = login.User;
-            string password = login.Password;
-            var domainAndUsername = _config.GetValue<string>("serverSettings:Domain") + @"\" + userName;
+            //Path del servidor Active Directory
             var _path = _config.GetValue<string>("serverSettings:Server");
+            LdapConnection connection = new(_path);
 
-
-            // Validar si el usuario existe 
-            PrincipalContext pc = new(ContextType.Domain, _path);
-            if (!pc.ValidateCredentials(userName, password))
-            {
-                dynamic data = new { Mensaje = "Usuario o contraseña incorrectos." };
-                return data;
-
-            }
-
-
-            DirectoryEntry entry = new("LDAP://" + _path, domainAndUsername, password);
-
-            DirectorySearcher search = new(entry);
 
             try
             {
-                //Busqueda del nombre.
-                search.Filter = "sAMAccountName=" + userName + "";
-                SearchResult results = search.FindOne();
-                string NombreCompleto = results.GetDirectoryEntry().Properties["DisplayName"].Value.ToString();
+                //Verificar usuario y contraseña
+                connection.Credential = new NetworkCredential(login.User, login.Password);
+                connection.Bind();
+                   
+                // Parametros para la busqueda en Active Directory
+                string[] attributesToReturn = new string[] { "displayName", "mail", "cn", "memberOf" };
 
-                // Validar el grupo de Active Directory
-                bool memberOf = results.GetDirectoryEntry().Properties["memberOf"].Contains(_config.GetValue<string>("serverSettings:PathGroup"));
+                string targetOu = _config.GetValue<string>("serverSettings:PathSearch");
 
-                //usuario password y grupo correcto.
-                if (memberOf)
+                string ldapSearchFilter = $"(sAMAccountName={login.User})";
+
+                SearchRequest searchRequest = new(targetOu, ldapSearchFilter, 
+                                                  SearchScope.Subtree,
+                                                  attributesToReturn);
+
+                SortRequestControl sortRequest = new("sn", false);
+                searchRequest.Controls.Add(sortRequest);
+
+                // Realizar busqueda
+                SearchResponse searchResponse =
+                            (SearchResponse)connection.SendRequest(searchRequest);
+
+                // Enumerar resultados 
+                foreach (SearchResultEntry entry in searchResponse.Entries)
                 {
-                    UserModel user = new() { User = userName, NombreCompleto = NombreCompleto };
-                    return user; 
+                    // Si tiene el grupo
+                    if (entry.Attributes["memberOf"][0].Equals(_config.GetValue<string>("serverSettings:PathGroup")))
+                    {
+                        login.NombreCompleto = entry.Attributes["displayName"][0].ToString();
+                        return login;
+                    }
+ 
                 }
                 //Sin el grupo.
-                else
-                {
-                    dynamic data = new { Mensaje = $"El usuario <span style='color:red'>{userName}</span> no tiene acceso a la aplicación" };
-                    return data;
-                }
-            }
-            catch (DirectoryServicesCOMException ex)  //Exception
-            {
-                dynamic data = new { Mensaje = $"{ex.Message}" };
+                dynamic data = new { Mensaje = $"El usuario <span style='color:red'>{login.User}</span> no tiene acceso a la aplicación" };
                 return data;
             }
-            finally
+
+            catch (LdapException lexc)
             {
-                entry.Close();
-                entry.Dispose();
-                search.Dispose();
+                if(lexc.Message == "The supplied credential is invalid.")
+                {
+                    return ("El usuario o la contraseña son incorrectos");
+                }
+
+                return lexc.Message;    
+                
+            }
+
+            catch (Exception e)
+            {
+                
+                return e.Message;
             }
         }
     }

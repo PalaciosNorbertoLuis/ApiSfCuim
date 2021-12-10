@@ -44,9 +44,14 @@ namespace ApiSfCuim
             {
                 options.AddPolicy(name: _MyCors, builder =>
                 {
-                    builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
-                                                                        .AllowAnyHeader()
-                                                                        .AllowAnyMethod();
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    //builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                    //                                                    .AllowAnyOrigin()
+                    //                                                    .AllowAnyHeader()
+                    //                                                    .AllowAnyMethod();
                 });
             });
 
