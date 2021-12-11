@@ -15,28 +15,27 @@ namespace ApiSfCuim.Controllers
     [Authorize]
     public class ObservationController : ControllerBase
     {
+        private readonly SigimacContext _context;
         public ObservationController (SigimacContext context)
         {
             _context = context;
         }
 
-        private readonly SigimacContext _context;
-
         [HttpGet("{reference}")]
 
-        public async Task<List<Observation>> GetObservationsAsync(int reference)
+        public IActionResult Index(int reference)
         {
-            List<Observation> Obser = await Task.Run(()=> _context.Observations
-                .Where(e => e.IdTmpArma == reference).OrderBy(e => e.FechaObservation)
+            List<Observation> Obser = _context.Observations
+                .Where(e => e.IdTmpArma == reference).OrderBy(e=> e.FechaObservation)
                 .Select(e => new Observation
                 {
-                    IdTmpArma = e.IdTmpArma,
+                    IdTmpArma   = e.IdTmpArma,
                     FechaObservation = e.FechaObservation,
                     Observacion = e.Observacion
 
-                }).ToList());
+                }).ToList();
 
-            return Obser;
+            return Ok(Obser);
         }
     }
 }

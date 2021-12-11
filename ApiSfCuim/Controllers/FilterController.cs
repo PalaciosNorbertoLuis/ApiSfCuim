@@ -15,37 +15,46 @@ namespace ApiSfCuim.Controllers
     [Authorize]
     public class FilterController : ControllerBase
     {
+        private readonly SigimacContext _context;
+        private readonly RenarAuxiliarContext _context2;
+
         public FilterController(SigimacContext context, RenarAuxiliarContext context2)
         {
             _context = context;
             _context2 = context2;
         }
-        private readonly SigimacContext _context;
-        private readonly RenarAuxiliarContext _context2;
 
+
+        //public FilterController(RenarAuxiliarContext context2)
+        //{
+        //    _context2 = context2;
+        //}
 
         [HttpGet("{reference}")]
-        public async Task<List<Filter>> GetListAsync(int reference)
-        {
-            List<Filter> filters = await Task.Run(()=> _context.Filters
-            .Where(e => e.IdTmpArma == reference).OrderBy(e => e.FechaFiltro)
-            .Select(e => new Filter
-            {
-                IdTmpArma = e.IdTmpArma,
-                FechaFiltro = e.FechaFiltro,
-                Filtro = e.Filtro,
-                TipoOperadorFiltro = e.TipoOperadorFiltro,
-                IdOperadorFiltro = e.IdOperadorFiltro
-            }).ToList());
 
-            foreach (var f in filters)
+        public IActionResult Index(int reference)
+        {
+            List<Filter> filters = _context.Filters
+                                .Where(e => e.IdTmpArma == reference).OrderBy(e => e.FechaFiltro)
+                                .Select(e => new Filter
+                                {
+                                    IdTmpArma          = e.IdTmpArma,
+                                    FechaFiltro        = e.FechaFiltro,
+                                    Filtro             = e.Filtro,
+                                    TipoOperadorFiltro = e.TipoOperadorFiltro,
+                                    IdOperadorFiltro   = e.IdOperadorFiltro
+                                }).ToList();
+
+            foreach(var f in filters)
             {
-                var operador = await Task.Run(() => _context2.Operators
-                                                    .Where(e => e.id_usuario == f.IdOperadorFiltro)
-                                                    .Select(e => e.login_id));
+                var operador = _context2.Operators.Where(e => e.id_usuario == f.IdOperadorFiltro).Select(e => e.login_id);
                 f.Operador = operador.Single();
             }
-            return filters;
+
+            return Ok(filters);
+                                
         }
+
+
     }
 }

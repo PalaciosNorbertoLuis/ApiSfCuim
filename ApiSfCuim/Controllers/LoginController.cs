@@ -51,7 +51,7 @@ namespace ApiSfCuim.Controllers
             return response;
         }
 
-        private  string GenerateJwtToken(UserModel usuario)
+        private string GenerateJwtToken(UserModel usuario)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetValue<string>("tokenSettings:SecurityKey")));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
@@ -59,7 +59,7 @@ namespace ApiSfCuim.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new  ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, usuario.User),
                     new Claim(ClaimTypes.GivenName, usuario.NombreCompleto),
