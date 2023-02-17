@@ -2,20 +2,13 @@ using ApiSfCuim.Data.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ApiSfCuim;
 using System.Text;
 
 namespace ApiSfCuim
@@ -44,14 +37,13 @@ namespace ApiSfCuim
             {
                 options.AddPolicy(name: _MyCors, builder =>
                 {
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                    //builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
-                    //                                                    .AllowAnyOrigin()
-                    //                                                    .AllowAnyHeader()
-                    //                                                    .AllowAnyMethod();
+                    builder.SetIsOriginAllowed(origin => 
+                                                    new Uri(origin).Host == 
+                                                                    Configuration
+                                                                            .GetValue<string>("serverSettings:UrlOrigin"))
+                                                                            .AllowAnyOrigin()
+                                                                            .AllowAnyHeader()
+                                                                            .AllowAnyMethod();
                 });
             });
 
@@ -68,7 +60,6 @@ namespace ApiSfCuim
             })
             .AddJwtBearer(x =>
             {
-                //x.RequireHttpsMetadata = !environment.IsDevelopment();
                 x.RequireHttpsMetadata = true;
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters

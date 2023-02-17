@@ -1,19 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using ApiSfCuim.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Runtime.Versioning;
 using System.Security.Claims;
 using System.DirectoryServices.Protocols;
-using Microsoft.Extensions.Options;
 using System.Net;
 
 namespace ApiSfCuim.Controllers
@@ -124,7 +120,8 @@ namespace ApiSfCuim.Controllers
             {
                 if(lexc.Message == "The supplied credential is invalid.")
                 {
-                    return ("El usuario o la contraseña son incorrectos");
+                    //return ("El usuario o la contraseña son incorrectos");
+                    return new { Mensaje = $"El usuario o la contraseña son incorrectos" };
                 }
 
                 return lexc.Message;    
